@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Date;
 
 @SpringBootApplication
 @RestController
@@ -16,7 +17,7 @@ public class SpringAppApplication {
 
 	@GetMapping("/")
 	public String HellotoOpenShift() {
-		return "Welcome to Openshift Deployment";
+		return "Welcome to Openshift Deployment-Edited"+new Date();
 	}
 
 	@GetMapping("/{name}")
