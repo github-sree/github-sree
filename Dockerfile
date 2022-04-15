@@ -6,7 +6,7 @@ RUN mvn clean install
 
 # Inject the JAR file into a new container to keep the file small
 FROM openjdk:8-jre-alpine
-WORKDIR /app
+WORKDIR /
 COPY --from=build /app/target/*.jar /app.jar
 EXPOSE 8080
 ENTRYPOINT ["sh", "-c"]
