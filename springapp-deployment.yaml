@@ -1,46 +1,3 @@
-<<<<<<< HEAD
- apiVersion: v1
- kind: PersistentVolumeClaim
- metadata:
-   name: spring-volume
- spec:
-   resources:
-     requests:
-       storage: 5Gi
-   volumeMode: Filesystem
-   accessModes:
-     - ReadWriteOnce
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: spring-app-v2
-spec:
-  selector:
-    matchLabels:
-      app: spring-app-v2
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: spring-app-v2
-    spec:
-      containers:
-        - name: spring-app-v2
-          image: sreedocker0798/spring-app:latest
-          ports:
-            - containerPort: 8080
-          volumeMounts:
-            - mountPath: /logs
-              name: app-volume
-              subPath: app-logs
-      volumes:
-        - name: app-volume
-          persistentVolumeClaim:
-            claimName: spring-volume
-            
----
-=======
  apiVersion: v1
  kind: PersistentVolumeClaim
  metadata:
@@ -82,4 +39,3 @@ spec:
             claimName: spring-volume
             
 ---
->>>>>>> 9e4e897e89a57cc75aa4f438e4ba82f3d421a37e
