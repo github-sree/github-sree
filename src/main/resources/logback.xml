@@ -3,7 +3,7 @@
 	<appender class="ch.qos.logback.core.ConsoleAppender"
 		name="STDOUT">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>ERROR</level>
+			<level>INFO</level>
 		</filter>
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -23,7 +23,7 @@
 			</pattern>
 		</encoder>
 		<file>
-			/logs/application.log
+			/media/sree/FILES/git-checkout/logs/application.log
 		</file>
 		<immediateFlush>
 			true
@@ -36,7 +36,7 @@
 				true
 			</cleanHistoryOnStart>
 			<fileNamePattern>
-				/logs/application-%d{yyyy-MM-dd}.%i.log
+				/media/sree/FILES/git-checkout/logs/application-%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
 			<maxFileSize>
 				100MB
@@ -56,4 +56,3 @@
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>
->>>>>>> 9e4e897e89a57cc75aa4f438e4ba82f3d421a37e
