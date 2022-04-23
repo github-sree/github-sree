@@ -14,7 +14,7 @@ def deploymentConfig = appName
 
 pipeline {
   agent {
-    label 'maven'
+    label 'maven-3.6.3'
   }
   stages {
 /*    stage('Run unit tests') {
