@@ -13,9 +13,7 @@ def imageBuildConfig = appName
 def deploymentConfig = appName
 
 pipeline {
-  agent {
-    label 'maven-3.6.3'
-  }
+  agent any
   stages {
 /*    stage('Run unit tests') {
       steps {
