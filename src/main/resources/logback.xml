@@ -23,7 +23,7 @@
 			</pattern>
 		</encoder>
 		<file>
-			/media/sree/FILES/git-checkout/logs/application.log
+			logs/application.log
 		</file>
 		<immediateFlush>
 			true
@@ -36,7 +36,7 @@
 				true
 			</cleanHistoryOnStart>
 			<fileNamePattern>
-				/media/sree/FILES/git-checkout/logs/application-%d{yyyy-MM-dd}.%i.log
+				logs/application-%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
 			<maxFileSize>
 				100MB
