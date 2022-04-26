@@ -2,9 +2,11 @@ pipeline {
   agent any
   stages {
     stage('CHECKOUT') {
-       git branch: 'main',
-    credentialsId: 'github-sree',
-    url: 'https://github.com/github-sree/github-sree.git'
+    steps{
+       git branch: 'main', 
+       credentialsId: 'github-sree',
+       url: 'https://github.com/github-sree/github-sree.git'
     }
+   }
   }
 }
