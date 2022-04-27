@@ -23,7 +23,7 @@
 			</pattern>
 		</encoder>
 		<file>
-			logs/application.log
+			/data/logs/application.log
 		</file>
 		<immediateFlush>
 			true
@@ -36,7 +36,7 @@
 				true
 			</cleanHistoryOnStart>
 			<fileNamePattern>
-				logs/application-%d{yyyy-MM-dd}.%i.log
+				/data/logs/application-%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
 			<maxFileSize>
 				100MB
