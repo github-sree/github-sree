@@ -6,14 +6,12 @@ node{
        url: 'https://github.com/github-sree/github-sree.git'
   
    }
-    stage('OPENSHIFT CHECKING'){
-           openshift.withCluster('oc-cluster','oc-credential-id') {
+    openshift.withCluster('oc-cluster','oc-credential-id') {
                     openshift.withProject() {
+    stage('OPENSHIFT CHECKING'){
                         echo "Using project: ${openshift.project()}"
                     }
-                }
-    }
-    stage('CLEAN PROJECT'){
+                    stage('CLEAN PROJECT'){
           openshift.withCluster('oc-cluster','oc-credential-id') {
                     openshift.withProject() {
                     openshift.selector( 'all', [ app:appName ] ).delete()
@@ -23,5 +21,6 @@ node{
                     // openshift.selector( 'bc', [ app:'nodejs-example' ] ).delete()
                     }
     }
-    
+                }
+    }    
 }
