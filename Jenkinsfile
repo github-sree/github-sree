@@ -7,7 +7,7 @@ node{
   
    }
     openshift.withCluster('oc-cluster','oc-credential-id') {
-             openshift.withProject() {
+             openshift.withProject('sree713k-dev') {
     stage('OPENSHIFT CHECKING'){
                         echo "Using project: ${openshift.project()}"
                     }
