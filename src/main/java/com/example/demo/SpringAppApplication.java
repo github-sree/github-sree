@@ -23,13 +23,13 @@ public class SpringAppApplication {
 	@GetMapping("/")
 	public String HellotoOpenShift() {
 		logger.info("triggered {}", new Date());
-		return "Welcome to Openshift Deployment-Edited" + new Date();
+		return "Openshift Deployment-Edited-now>>>" + new Date();
 	}
 
 	@GetMapping("/{name}")
 	public String HellotoOpenShift(@PathVariable String name) {
 		logger.info("triggered {},{}", name, new Date());
-		return "Hi " + name + ", Welcome to Openshift Deployment";
+		return "Hi " + name + ", Openshift Deployment changes reflected";
 	}
 
 }
