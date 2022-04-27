@@ -8,5 +8,8 @@ pipeline {
        url: 'https://github.com/github-sree/github-sree.git'
     }
    }
+   	stage(''){
+   	
+   	}
   }
 }
