@@ -1,70 +1,118 @@
-# Define a 'Persistent Volume Claim'(PVC) for MySQL Storage, dynamically provisioned by cluster
-apiVersion: v1
 kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
-  name: spring-volume
+  name: springapp-data
 spec:
-  resources:
-    requests:
-      storage: 5Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
+  resources:
+    requests:
+      storage: 512Mi
 ---
-# Deployment specification begins here
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: ImageStream
 metadata:
-  name: mysql
   labels:
-    app: mysql
-    tier: database
+    app: springapp
+  name: springapp
+spec: {}
+---
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  name: springapp
+  labels:
+    app: springapp
+    application: springapp
 spec:
-  selector: # mySQL Pod Should contain same labels
-    matchLabels:
-      app: mysql
+  output:
+    to:
+      kind: ImageStreamTag
+      name: springapp:latest
+  source:
+    git:
+      ref: main
+      uri: https://github.com/github-sree/github-sree.git
+    type: Git
+    # contextDir: ${CONTEXT_DIR}
   strategy:
-    type: Recreate
+    sourceStrategy:
+      forcePull: true
+      from:
+        kind: ImageStreamTag
+        name: java:11
+        namespace: openshift
+      # env:
+      #   - name: MAVEN_MIRROR_URL
+      #     value: https://artifactory.dhl.com/maven-release
+    type: Source
+  triggers:
+    - github:
+        secret: github-secret
+      type: GitHub
+    - type: Generic
+      generic:
+        secret: github-secret
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: springapp
+  name: springapp
+spec:
+  replicas: 1
+  selector:
+    app: springapp
+    deploymentconfig: springapp
+  strategy:
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
   template:
     metadata:
-      labels: # Must match 'Service' and 'Deployment' selectors
-        app: mysql
-        tier: database
+      labels:
+        app: springapp
+        deploymentconfig: springapp
     spec:
-      containers:
-        - name: mysql
-          image: mysql
-          imagePullPolicy: "IfNotPresent"
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              value: root
-            - name: MYSQL_DATABASE
-              value: fleetdb
-          ports:
-            - containerPort: 3307
-              name: mysql
-          volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: mysql-persistance-storage
       volumes:
-        - name: mysql-persistance-storage
+        -
+          name: springapp-data
           persistentVolumeClaim:
-            claimName: spring-volume
----
-# Define a 'Service' To Expose MySQL to Other Services
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql
-  labels:
-    app: mysql
-    tier: database
-spec:
-  ports:
-    - port: 3307
-      targetPort: 3307
-  selector:
-    app: mysql
-    tier: database
-  clusterIP: None # DNS is used, so clusterIP is not needed
+            claimName: springapp-data
+      containers:
+      - image: springapp/springapp:latest
+        imagePullPolicy: Always
+        name: springapp
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+            -
+              name: springapp-data
+              mountPath: /data
+        terminationMessagePath: /dev/termination-log
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - springapp
+      from:
+        kind: ImageStreamTag
+        name: springapp:latest
+    type: ImageChange
 ---
