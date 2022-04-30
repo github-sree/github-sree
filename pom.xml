@@ -10,10 +10,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>spring-app</artifactId>
+	<artifactId>k8s-backend-app</artifactId>
 	<version>0.0.1</version>
-	<name>springApp</name>
-	<description>Demo project for Spring Boot</description>
+	<name>k8s-backend-app</name>
+	<description>k8s-backend-app from Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
