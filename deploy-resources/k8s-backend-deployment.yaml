@@ -14,6 +14,9 @@ spec:
     spec:
       containers:
         - name: k8s-backend
+          env:
+          - name: USER_HOME
+            value: /home/sree/logs
           image: sreedocker0798/k8s-learning-backend:1.0.0
           imagePullPolicy: Always
           ports:
