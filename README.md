@@ -1,4 +1,12 @@
-### Hi there 👋
+
+# k8s-backend-service
+
+
+
+------------------------------------------------------------
+
+ This service used to provide initial version api for general services like user registration and login authentication
+
 
 <!--
 **github-sree/github-sree** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
