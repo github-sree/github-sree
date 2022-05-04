@@ -1,10 +1,6 @@
 
 # k8s-backend-service
 
-
-
-------------------------------------------------------------
-
  This service used to provide initial version api for general services like user registration and login authentication
 
 
