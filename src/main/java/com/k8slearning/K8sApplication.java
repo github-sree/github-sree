@@ -1,23 +1,29 @@
-package com.example.demo;
+package com.k8slearning;
+
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Date;
 
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+import com.k8slearning.service.UserService;
+
+@SpringBootApplication
 @RestController
-public class SpringAppApplication {
+public class K8sApplication {
 
-	Logger logger = LoggerFactory.getLogger(SpringAppApplication.class);
+	Logger logger = LoggerFactory.getLogger(K8sApplication.class);
+
+	@Autowired
+	UserService userService;
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringAppApplication.class, args);
+		SpringApplication.run(K8sApplication.class, args);
 	}
 
 	@GetMapping("/")
