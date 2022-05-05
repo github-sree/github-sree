@@ -10,23 +10,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "role_privilege_assoc")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RolePrevilAssoc {
+
 	@Id
-	private String userId;
-	private String firstName;
-	private String lastName;
-	private String userName;
-	private String email;
-	private String password;
-	private boolean enabled;
-	private boolean tokenExpired;
+	private String rpId;
+
 	@ManyToOne
-	@JoinColumn(name = "role_id",referencedColumnName = "roleId")
+	@JoinColumn(name = "role_id", referencedColumnName = "roleId")
 	private Role role;
+
+	@ManyToOne
+	@JoinColumn(name="privilege_id",referencedColumnName = "privilegeId")
+	private Privilege privilege;
 
 }

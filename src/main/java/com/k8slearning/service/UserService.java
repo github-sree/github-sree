@@ -1,9 +1,7 @@
 package com.k8slearning.service;
 
-import java.util.List;
+import org.springframework.stereotype.Service;
 
-import com.k8slearning.model.UserEntity;
-
-public interface UserService {
-	List<UserEntity> getAllUser();
+@Service
+public class UserService {
 }

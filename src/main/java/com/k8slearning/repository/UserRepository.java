@@ -1,11 +1,9 @@
 package com.k8slearning.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.k8slearning.model.UserEntity;
 
-public interface UserRepository {
-
-	List<UserEntity> getAllUsers();
+public interface UserRepository extends JpaRepository<UserEntity, Integer>{
 
 }

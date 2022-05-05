@@ -1,12 +1,8 @@
 package com.k8slearning.model;
 
-import java.util.Set;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -19,18 +15,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "privilege")
 public class Privilege {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
-
-    private String name;
-    
-    private boolean canView;
-    
-    private boolean canEdit;
-    
-    private boolean canDelete;
-
-    @ManyToMany(mappedBy = "privileges")
-    private Set<Role> roles;
+	@Id
+	private String privilegeId;
+	@Column(unique = true, nullable = false)
+	private String name;
+	@Column(nullable = false)
+	private String action;
 }
