@@ -19,6 +19,4 @@ public class Privilege {
 	private String privilegeId;
 	@Column(unique = true, nullable = false)
 	private String name;
-	@Column(nullable = false)
-	private String action;
 }

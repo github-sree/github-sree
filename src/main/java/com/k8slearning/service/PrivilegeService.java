@@ -1,11 +1,7 @@
 package com.k8slearning.service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -18,21 +14,19 @@ import org.springframework.stereotype.Service;
 import com.k8slearning.api.PrivilegeApi;
 import com.k8slearning.model.Privilege;
 import com.k8slearning.repository.PrivilegeRepository;
+import com.k8slearning.utils.CustomException;
 
 @Service
 public class PrivilegeService {
 
-	Logger logger = LoggerFactory.getLogger(PrivilegeService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PrivilegeService.class);
 
 	@Autowired
 	PrivilegeRepository privilegeRepository;
 
-	@PersistenceContext
-	EntityManager em;
-
 	@Autowired
 	ModelMapper modelMap;
-	
+
 	PrivilegeApi privilegeResponse = null;
 
 	public PrivilegeApi createPrivileges(PrivilegeApi privilegeApi) {
@@ -42,8 +36,9 @@ public class PrivilegeService {
 			privil.setPrivilegeId(UUID.randomUUID().toString());
 			privilegeRepository.save(privil);
 			response = modelMap.map(privil, PrivilegeApi.class);
+			LOGGER.info("privilege saved with id::{}", privil.getPrivilegeId());
 		} catch (Exception e) {
-			logger.error("exception in privil service {}", e.getMessage());
+			LOGGER.error("exception in privil service {}", e.getMessage());
 		}
 		return response;
 	}
@@ -55,22 +50,31 @@ public class PrivilegeService {
 	public PrivilegeApi updatePrivilege(String privilegeId, PrivilegeApi privilegeApi) {
 		privilegeResponse = null;
 		try {
-			logger.info("privil api::{}", privilegeApi);
 			Optional<Privilege> privilege = privilegeRepository.findById(privilegeId);
-			logger.info("is privilege present? {}", privilege.isPresent());
 			privilege.ifPresent(pDto -> {
 				privilegeResponse = new PrivilegeApi();
 				modelMap.map(privilegeApi, pDto);
 				pDto.setPrivilegeId(privilegeId);
-				logger.info("privil before{}", pDto);
 				privilegeRepository.save(pDto);
-				logger.info("privil after{}", pDto);
 				privilegeResponse = modelMap.map(pDto, PrivilegeApi.class);
+				LOGGER.info("privilege updated with id::{}", pDto.getPrivilegeId());
 			});
 		} catch (Exception e) {
-			logger.error("exception in privil update {}", e.getMessage());
+			LOGGER.error("exception in privil update {}", e.getMessage());
 		}
 		return privilegeResponse;
+	}
+
+	public void deletePrivilege(String privilegeId) throws CustomException {
+		try {
+			privilegeRepository.findById(privilegeId).ifPresent(privil -> {
+				privilegeRepository.deleteById(privilegeId);
+				LOGGER.info("privilege deleted {}", privilegeId);
+			});
+		} catch (Exception e) {
+			LOGGER.error("exception in privil delete {}", e.getMessage());
+			throw new CustomException("Unable to delete privilegeId " + privilegeId);
+		}
 	}
 
 }
