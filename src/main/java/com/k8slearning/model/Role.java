@@ -22,7 +22,8 @@ public class Role {
 	@Id
 	private String roleId;
 	private String roleName;
-	private Boolean active;
-	@OneToMany(targetEntity = Privilege.class, cascade = CascadeType.ALL, orphanRemoval = true)
+	private boolean active;
+	private boolean initialRole;
+	@OneToMany(targetEntity = Privilege.class,fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Privilege> privileges;
 }

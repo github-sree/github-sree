@@ -33,7 +33,7 @@ public class RolesController {
 
 	@PostMapping("/role")
 	public ResponseEntity<RoleApi> createRole(@Valid @RequestBody RoleApi roleApi) {
-		return new ResponseEntity<>(roleService.createRole(roleApi), HttpStatus.OK);
+		return new ResponseEntity<>(roleService.createRole(roleApi, false), HttpStatus.OK);
 	}
 
 	@GetMapping("/role")

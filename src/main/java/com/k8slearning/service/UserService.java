@@ -15,13 +15,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.k8slearning.api.UserApi;
 import com.k8slearning.auth.AuthUserDetails;
+import com.k8slearning.model.Role;
 import com.k8slearning.model.UserEntity;
+import com.k8slearning.repository.RoleRepository;
 import com.k8slearning.repository.UserRepository;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
@@ -30,16 +34,21 @@ public class UserService implements UserDetailsService {
 	UserRepository userRepository;
 
 	@Autowired
+	RoleRepository roleRepository;
+
+	@Autowired
 	ModelMapper modelMapper;
 
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
+	UserApi response = null;
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		AuthUserDetails userdetails = null;
 		UserEntity userEntity = Optional.ofNullable(userRepository.findByUserName(username))
-				.orElseThrow(() -> new UsernameNotFoundException(""));
+				.orElseThrow(() -> new UsernameNotFoundException("no user found.."));
 		userdetails = new AuthUserDetails(userEntity);
 
 		return userdetails;
@@ -77,4 +86,25 @@ public class UserService implements UserDetailsService {
 		});
 		return null;
 	}
+
+	public UserApi assignRoleToUser(String userId, String roleId, boolean firstRoleAssign) {
+		response = null;
+		try {
+			Optional<UserEntity> userR = userRepository.findById(userId);
+			userR.ifPresent(user -> {
+				Optional<Role> roleOp = roleRepository.findById(roleId);
+				roleOp.ifPresent(role -> {
+					user.setRole(role);
+					userRepository.save(user);
+					response = modelMapper.map(user, UserApi.class);
+				});
+			});
+			response.setPassword(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOGGER.info("exception in assign role {}", e.getMessage());
+		}
+		return response;
+	}
+
 }

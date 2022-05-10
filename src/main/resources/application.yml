@@ -12,4 +12,9 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none  data:    web:      pageable:        one-indexed-parameters: true
+k8sapp:
+  jwt:
+    cookieName: k8sappCookie
+    secret: k8ssecretKey
+    expirationMs: 86400000
         

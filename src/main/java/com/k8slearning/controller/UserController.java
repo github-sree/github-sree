@@ -56,4 +56,9 @@ public class UserController {
 	public ResponseEntity<UserApi> updateUser(@PathVariable String userId, @Valid @RequestBody UserApi userApi) {
 		return new ResponseEntity<>(userService.updateUser(userId, userApi), HttpStatus.OK);
 	}
+
+	@PutMapping("/user/assign-role/{userId}/{roleId}")
+	public ResponseEntity<UserApi> assignRole(@PathVariable String userId, @PathVariable String roleId) {
+		return new ResponseEntity<>(userService.assignRoleToUser(userId, roleId, false), HttpStatus.OK);
+	}
 }

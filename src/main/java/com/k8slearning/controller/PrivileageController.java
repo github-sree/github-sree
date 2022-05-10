@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class PrivileageController {
 	}
 
 	@GetMapping("/privilege")
+	@PreAuthorize("hasRole('PRIVILEGE_VIEW')")
 	public ResponseEntity<PagingResponseApi<PrivilegeApi>> retrievePrivileges(final Pageable pageable) {
 		Page<Privilege> privilage = privilegeService.retrievePrivileges(pageable);
 		PagingResponseApi<PrivilegeApi> contents = new PagingResponseApi<>();
@@ -55,6 +57,7 @@ public class PrivileageController {
 	}
 	
 	@DeleteMapping("/privilege/{privilegeId}")
+	@PreAuthorize("hasRole('PRIVILEGE_DELETE')")
 	public void deletePrivilege(@PathVariable String privilegeId) throws CustomException {
 		privilegeService.deletePrivilege(privilegeId);
 	}
