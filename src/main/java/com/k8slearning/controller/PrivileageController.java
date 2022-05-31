@@ -19,6 +19,7 @@ import com.k8slearning.api.PagingResponseApi;
 import com.k8slearning.api.PrivilegeApi;
 import com.k8slearning.model.Privilege;
 import com.k8slearning.service.PrivilegeService;
+import com.k8slearning.utils.Constants;
 import com.k8slearning.utils.CustomException;
 import com.k8slearning.utils.K8sUtils;
 
@@ -27,18 +28,19 @@ import com.k8slearning.utils.K8sUtils;
 public class PrivileageController {
 
 	@Autowired
-	PrivilegeService privilegeService;
+	private PrivilegeService privilegeService;
 
 	@Autowired
-	K8sUtils utils;
+	private K8sUtils utils;
 
 	@PostMapping("/privilege")
+	@PreAuthorize(Constants.Privileges.PRIVILEGE_CREATE)
 	public ResponseEntity<PrivilegeApi> createPrivileges(@RequestBody PrivilegeApi privilegeApi) {
 		return new ResponseEntity<>(privilegeService.createPrivileges(privilegeApi), HttpStatus.OK);
 	}
 
 	@GetMapping("/privilege")
-	@PreAuthorize("hasRole('PRIVILEGE_VIEW')")
+	@PreAuthorize(Constants.Privileges.PRIVILEGE_READ)
 	public ResponseEntity<PagingResponseApi<PrivilegeApi>> retrievePrivileges(final Pageable pageable) {
 		Page<Privilege> privilage = privilegeService.retrievePrivileges(pageable);
 		PagingResponseApi<PrivilegeApi> contents = new PagingResponseApi<>();
@@ -51,13 +53,14 @@ public class PrivileageController {
 	}
 
 	@PutMapping("/privilege/{privilegeId}")
+	@PreAuthorize(Constants.Privileges.PRIVILEGE_UPDATE)
 	public ResponseEntity<PrivilegeApi> updatePrivilege(@PathVariable String privilegeId,
 			@RequestBody PrivilegeApi privilegeApi) {
 		return new ResponseEntity<>(privilegeService.updatePrivilege(privilegeId, privilegeApi), HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/privilege/{privilegeId}")
-	@PreAuthorize("hasRole('PRIVILEGE_DELETE')")
+	@PreAuthorize(Constants.Privileges.PRIVILEGE_DELETE)
 	public void deletePrivilege(@PathVariable String privilegeId) throws CustomException {
 		privilegeService.deletePrivilege(privilegeId);
 	}

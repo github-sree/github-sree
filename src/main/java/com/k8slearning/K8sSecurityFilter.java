@@ -21,37 +21,39 @@ import com.k8slearning.utils.K8sJwtUtils;
 
 public class K8sSecurityFilter extends OncePerRequestFilter {
 
-	Logger logger = LoggerFactory.getLogger(K8sSecurityFilter.class);
+	private static Logger loggerFilter = LoggerFactory.getLogger(K8sSecurityFilter.class);
 
 	@Autowired
-	K8sJwtUtils jwtUtils;
+	private K8sJwtUtils jwtUtils;
 	@Autowired
 	private UserService userDetailsService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		String currentUri = request.getRequestURI();
 		try {
-			String jwt = parseJwt(request);
-			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-				String username = jwtUtils.getUserNameFromJwtToken(jwt);
-				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+			if (!currentUri.contains("/v1/setup")) {
+				String jwt = parseJwt(request);
+				if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+					String username = jwtUtils.getUserNameFromJwtToken(jwt);
+					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+							userDetails, null, userDetails.getAuthorities());
 
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
 			}
 		} catch (Exception e) {
-			logger.error("Cannot set user authentication: {}", e.getMessage());
+			loggerFilter.error("Cannot set user authentication: {}", e.getMessage());
 		}
 		filterChain.doFilter(request, response);
 	}
 
 	private String parseJwt(HttpServletRequest request) {
-		String jwt = jwtUtils.getJwtFromCookies(request);
-		return jwt;
+		return jwtUtils.getJwtFromCookies(request);
 	}
 
 }

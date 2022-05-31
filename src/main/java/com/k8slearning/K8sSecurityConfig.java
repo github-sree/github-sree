@@ -13,9 +13,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.k8slearning.service.UserService;
+import com.k8slearning.service.impl.v1.UserServiceImpl;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +25,7 @@ import com.k8slearning.service.UserService;
 public class K8sSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	AuthEntryPoint authEntryPoint;
+	private AuthEntryPoint authEntryPoint;
 
 	@Bean
 	public K8sSecurityFilter secK8sSecurityFilter() {
@@ -33,7 +35,7 @@ public class K8sSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	@Bean
 	protected UserDetailsService userDetailsService() {
-		return new UserService();
+		return new UserServiceImpl();
 	}
 
 	@Bean
@@ -56,12 +58,17 @@ public class K8sSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 
-				.csrf().disable().exceptionHandling().authenticationEntryPoint(authEntryPoint).and().cors().and()
-				.authorizeRequests()
-				.antMatchers("/v1/auth/signin", "/v1/auth/signout", "/h2-console/**", "/v1/setup/**").permitAll()
-				.anyRequest().fullyAuthenticated().and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+				.csrf().disable().exceptionHandling().authenticationEntryPoint(authEntryPoint)
+				.accessDeniedHandler(accessDeniedHandler()).and().cors().and().authorizeRequests()
+				.antMatchers("/v1/signin", "/v1/signout", "/h2-console/**", "/v1/setup/**").permitAll().anyRequest()
+				.fullyAuthenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.headers().frameOptions().disable();
 		http.addFilterBefore(secK8sSecurityFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
+
+	@Bean
+	public AccessDeniedHandler accessDeniedHandler() {
+		return new AccessDeniedHandlerImpl();
+	}
+
 }

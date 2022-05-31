@@ -1,7 +1,5 @@
 package com.k8slearning.utils;
 
-import java.time.Instant;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
@@ -67,12 +65,11 @@ public class K8sJwtUtils {
 
 	public ResponseCookie generateJwtCookie(UserDetails ud) {
 		String jwt = generateTokenFromName(ud.getUsername());
-		return ResponseCookie.from(cookieName, jwt).path("/v1").maxAge(24 * 60 * 60).httpOnly(true).build();
+		return ResponseCookie.from(cookieName, jwt).path("/").maxAge(24 * 60 * 60).httpOnly(true).build();
 	}
 
 	public ResponseCookie getCleanJwtCookie() {
-		ResponseCookie cookie = ResponseCookie.from(cookieName, null).path("/v1").build();
-		return cookie;
+		return ResponseCookie.from(cookieName, "").path("/").maxAge(0).build();
 	}
 
 	private String generateTokenFromName(String username) {

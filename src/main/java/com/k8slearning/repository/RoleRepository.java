@@ -7,6 +7,6 @@ import com.k8slearning.model.Role;
 
 public interface RoleRepository extends JpaRepository<Role, String> {
 
-	@Query("SELECT COUNT(r.roleId)>0 FROM Role r")
-	public boolean roleEmpty();
+	@Query("SELECT COUNT(r.roleId)>0 FROM Role r WHERE r.initialRole=true")
+	public boolean initialRoleExists();
 }

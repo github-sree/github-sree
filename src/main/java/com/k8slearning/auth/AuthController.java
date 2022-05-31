@@ -1,5 +1,7 @@
 package com.k8slearning.auth;
 
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,54 +15,60 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.k8slearning.api.AuthRequestApi;
-import com.k8slearning.api.UserApi;
-import com.k8slearning.service.UserService;
+import com.k8slearning.api.AuthResponseApi;
 import com.k8slearning.utils.K8sJwtUtils;
 
 @RestController
-@RequestMapping("/v1/auth")
+@RequestMapping("/v1")
 public class AuthController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	@Autowired
 	private K8sJwtUtils jwtUtils;
-	Logger logger = LoggerFactory.getLogger(AuthController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 	@PostMapping("/signin")
-	public ResponseEntity<?> authenticate(@RequestBody AuthRequestApi authApi) {
-		System.out.println("into auth");
+	public ResponseEntity<Object> authenticate(@RequestBody AuthRequestApi authApi) {
 		try {
 			Authentication auth = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(authApi.getUserName(), authApi.getPassWord()));
 			SecurityContextHolder.getContext().setAuthentication(auth);
 			AuthUserDetails userDetails = (AuthUserDetails) auth.getPrincipal();
 			ResponseCookie resCookie = jwtUtils.generateJwtCookie(userDetails);
-			logger.info("uesr ede {}", userDetails);
 			return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, resCookie.toString())
-					.body(new UserApi(userDetails.getUsername()));
+					.body(generateResponse(userDetails));
 		} catch (DisabledException e) {
-			logger.info("exception in auth  {}", e.getMessage());
-			return new ResponseEntity<>("USER DISABLED", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("USER DISABLED", HttpStatus.FORBIDDEN);
 		} catch (BadCredentialsException e) {
-			logger.info("exception in auth  {}", e.getMessage());
-			return new ResponseEntity<>("INVALID_CREDENTIALS", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("INVALID_CREDENTIALS", HttpStatus.FORBIDDEN);
 		} catch (Exception e) {
-			logger.info("exception in auth  {}", e.getMessage());
+			logger.error("exception in auth  {}", e.getMessage());
 			return null;
 		}
 
 	}
 
+	private AuthResponseApi generateResponse(AuthUserDetails userDetails) {
+		AuthResponseApi response = new AuthResponseApi();
+		response.setFirstName(userDetails.getFirstName());
+		response.setLastName(userDetails.getLastName());
+		response.setUserName(userDetails.getUsername());
+		response.setEmail(userDetails.getEmail());
+		response.setRole(userDetails.getRole());
+		response.setAuthorities(userDetails.getAuthorities().stream().map(p -> p.getAuthority().replace("ROLE_", ""))
+				.collect(Collectors.toSet()));
+		return response;
+	}
+
 	@PostMapping("/signout")
-	public ResponseEntity<?> logoutUser() {
+	public ResponseEntity<String> logoutUser() {
 		ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("You've been signed out!");
 	}

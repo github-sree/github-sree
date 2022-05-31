@@ -7,13 +7,15 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @JsonInclude(value = Include.NON_NULL)
-public class UserApi {
+public class UserApi extends ResponseApi {
 	private String userId;
 	private String firstName;
 	@NotNull(message = "Last name is required")

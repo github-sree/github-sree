@@ -4,7 +4,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -24,6 +23,6 @@ public class Role {
 	private String roleName;
 	private boolean active;
 	private boolean initialRole;
-	@OneToMany(targetEntity = Privilege.class,fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(targetEntity = Privilege.class, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Privilege> privileges;
 }

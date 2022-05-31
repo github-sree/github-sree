@@ -5,14 +5,16 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @JsonInclude(value = Include.NON_NULL)
-public class PrivilegeApi {
+public class PrivilegeApi extends ResponseApi {
 	private String privilegeId;
 	private String name;
-	private String action;
+	private String code;
 }

@@ -10,5 +10,4 @@ public class K8sApplication {
 		SpringApplication.run(K8sApplication.class, args);
 	}
 
-
 }

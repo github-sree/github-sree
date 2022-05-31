@@ -9,7 +9,7 @@
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
-	<appender
+<!-- 	<appender
 		class="ch.qos.logback.core.rolling.RollingFileAppender" name="FILE">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>INFO</level>
@@ -30,8 +30,8 @@
 		</immediateFlush>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<!-- each file should be at most 100MB, keep 30 days worth of history, 
-				but at most 1GB -->
+			each file should be at most 100MB, keep 30 days worth of history, 
+				but at most 1GB
 			<cleanHistoryOnStart>
 				true
 			</cleanHistoryOnStart>
@@ -48,10 +48,10 @@
 				1024MB
 			</totalSizeCap>
 		</rollingPolicy>
-	</appender>
-	<root level="INFO">
+	</appender> -->
+	<!-- <root level="INFO">
 		<appender-ref ref="FILE" />
-	</root>
+	</root> -->
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>

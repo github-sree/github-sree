@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 public class Privilege {
 	@Id
 	private String privilegeId;
-	@Column(unique = true,nullable = false)
+	@Column(unique = true, nullable = false)
 	private String name;
+	private Integer code;
 }

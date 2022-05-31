@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import com.k8slearning.api.PagingResponseApi;
 import com.k8slearning.api.RoleApi;
 import com.k8slearning.model.Role;
 import com.k8slearning.service.RoleService;
+import com.k8slearning.utils.Constants;
 import com.k8slearning.utils.K8sUtils;
 
 @RestController
@@ -32,15 +34,16 @@ public class RolesController {
 	private K8sUtils utils;
 
 	@PostMapping("/role")
+	@PreAuthorize(Constants.Role.ROLES_CREATE)
 	public ResponseEntity<RoleApi> createRole(@Valid @RequestBody RoleApi roleApi) {
-		return new ResponseEntity<>(roleService.createRole(roleApi, false), HttpStatus.OK);
+		return new ResponseEntity<>(roleService.createRole(roleApi), HttpStatus.OK);
 	}
 
 	@GetMapping("/role")
+	@PreAuthorize(Constants.Role.ROLES_READ)
 	public ResponseEntity<PagingResponseApi<RoleApi>> retrieveRoles(final Pageable pageable) {
 		Page<Role> pageRole = roleService.retrieveRoles(pageable);
 		PagingResponseApi<RoleApi> contents = new PagingResponseApi<>();
-
 		contents.setTotalCount(pageRole.getTotalElements());
 		contents.setPageNo(pageRole.getNumber());
 		contents.setTotalPages(pageRole.getTotalPages());
@@ -50,6 +53,7 @@ public class RolesController {
 	}
 
 	@PutMapping("/role/{roleId}")
+	@PreAuthorize(Constants.Role.ROLES_UPDATE)
 	public ResponseEntity<RoleApi> updateRole(@PathVariable String roleId, @Valid @RequestBody RoleApi roleApi) {
 		return new ResponseEntity<>(roleService.updateRole(roleId, roleApi), HttpStatus.OK);
 	}

@@ -3,9 +3,11 @@ package com.k8slearning.api;
 import java.util.List;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class PagingResponseApi<T> {
+@EqualsAndHashCode(callSuper = false)
+public class PagingResponseApi<T> extends ResponseApi {
 	private Long totalCount;
 	private Integer pageNo;
 	private Integer totalPages;

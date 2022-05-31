@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +14,7 @@ import com.k8slearning.model.UserEntity;
 public class AuthUserDetails implements UserDetails {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -34,9 +33,7 @@ public class AuthUserDetails implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Role roles = user.getRole();
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-		roles.getPrivileges().forEach(auth -> {
-			authorities.add(new SimpleGrantedAuthority("ROLE_"+auth.getName()));
-		});
+		roles.getPrivileges().forEach(auth -> authorities.add(new SimpleGrantedAuthority("ROLE_" + auth.getCode())));
 
 		return authorities;
 	}
@@ -69,6 +66,22 @@ public class AuthUserDetails implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return user.isEnabled();
+	}
+
+	public String getFirstName() {
+		return user.getFirstName();
+	}
+
+	public String getLastName() {
+		return user.getLastName();
+	}
+
+	public String getEmail() {
+		return user.getEmail();
+	}
+
+	public String getRole() {
+		return user.getRole().getRoleName();
 	}
 
 }

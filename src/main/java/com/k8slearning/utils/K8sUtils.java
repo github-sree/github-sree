@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 public class K8sUtils {
 
 	@Autowired
-	ModelMapper modelMapper;
-	
+	private ModelMapper modelMapper;
+
 	public <S, T> List<T> mapStream(Stream<S> source, Class<T> targetClass) {
 		return source.map(element -> modelMapper.map(element, targetClass)).collect(Collectors.toList());
 	}
