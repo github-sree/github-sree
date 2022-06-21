@@ -2,6 +2,8 @@ package com.k8slearning.api;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @JsonInclude(value = Include.NON_NULL)
+@Component
 public class UserApi extends ResponseApi {
 	private String userId;
 	private String firstName;
@@ -37,4 +40,16 @@ public class UserApi extends ResponseApi {
 		this.userName = userName;
 	}
 
+	@Override
+	public void clear() {
+		setUserId(null);
+		setFirstName(null);
+		setLastName(null);
+		setUserName(null);
+		setPassword(null);
+		setEmail(null);
+		setRole(null);
+		setMessage(null);
+		setStatus(null);
+	}
 }

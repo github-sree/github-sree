@@ -1,5 +1,6 @@
 package com.k8slearning.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,6 +9,7 @@ import com.k8slearning.model.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, String> {
 
+	@EntityGraph("graph.user-roles-privileges")
 	@Query("SELECT a from UserEntity a WHERE a.userName=:userName")
 	public UserEntity findByUserName(@Param("userName") String userName);
 

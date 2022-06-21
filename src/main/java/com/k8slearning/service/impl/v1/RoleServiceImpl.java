@@ -19,7 +19,7 @@ import com.k8slearning.model.Role;
 import com.k8slearning.repository.PrivilegeRepository;
 import com.k8slearning.repository.RoleRepository;
 import com.k8slearning.service.RoleService;
-import com.k8slearning.utils.Constants;
+import com.k8slearning.utils.ConstantsUtil;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -32,10 +32,13 @@ public class RoleServiceImpl implements RoleService {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private RoleApi roleResponse;
 
 	@Override
 	public RoleApi createRole(RoleApi roleApi) {
-		RoleApi response = null;
+		roleResponse.clear();
 		try {
 			Role roles = modelMapper.map(roleApi, Role.class);
 			roles.setRoleId(UUID.randomUUID().toString());
@@ -50,13 +53,13 @@ public class RoleServiceImpl implements RoleService {
 				roles.setPrivileges(processPrivilege(roleApi.getPrivilegeNames()));
 			}
 			roleRepository.save(roles);
-			response = modelMapper.map(roles, RoleApi.class);
-			response.setMessage(Constants.ResponseStatus.ROLE_SAVED);
-			response.setStatus(Constants.Status.SUCCESS);
+			roleResponse = modelMapper.map(roles, RoleApi.class);
+			roleResponse.setMessage(ConstantsUtil.ResponseStatus.ROLE_SAVED);
+			roleResponse.setStatus(ConstantsUtil.Status.SUCCESS);
 		} catch (Exception e) {
 			LOGGER.info("exception roles save {}", e.getLocalizedMessage());
 		}
-		return response;
+		return roleResponse;
 	}
 
 	private Set<Privilege> processPrivilege(Set<String> privilegeNames) {

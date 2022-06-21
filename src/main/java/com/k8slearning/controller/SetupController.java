@@ -17,7 +17,7 @@ import com.k8slearning.api.RoleApi;
 import com.k8slearning.api.UserApi;
 import com.k8slearning.service.RoleService;
 import com.k8slearning.service.UserService;
-import com.k8slearning.utils.Constants;
+import com.k8slearning.utils.ConstantsUtil;
 
 @RestController
 @RequestMapping("/v1/setup")
@@ -32,8 +32,8 @@ public class SetupController {
 	@PostMapping("/role")
 	public ResponseEntity<RoleApi> setupRole(@Valid @RequestBody RoleApi roleApi) {
 		if (roleService.firstRoleCreated()) {
-			roleApi.setMessage(Constants.ResponseStatus.INITIAL_ROLE_EXISTS);
-			roleApi.setStatus(Constants.Status.WARNING);
+			roleApi.setMessage(ConstantsUtil.ResponseStatus.INITIAL_ROLE_EXISTS);
+			roleApi.setStatus(ConstantsUtil.Status.WARNING);
 			return new ResponseEntity<>(roleApi, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(roleService.createRole(roleApi), HttpStatus.OK);
@@ -43,8 +43,8 @@ public class SetupController {
 	public ResponseEntity<UserApi> setupUser(@Valid @RequestBody UserApi userApi) {
 		if (userService.firstUserCreated()) {
 			userApi.setUserId(userService.initialUserId());
-			userApi.setMessage(Constants.ResponseStatus.INITIAL_USER_EXISTS);
-			userApi.setStatus(Constants.Status.WARNING);
+			userApi.setMessage(ConstantsUtil.ResponseStatus.INITIAL_USER_EXISTS);
+			userApi.setStatus(ConstantsUtil.Status.WARNING);
 			return new ResponseEntity<>(userApi, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(userService.createUser(userApi), HttpStatus.OK);

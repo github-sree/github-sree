@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -16,6 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
+@NamedEntityGraph(name = "graph.user-roles-privileges", attributeNodes = @NamedAttributeNode(value = "role", subgraph = "subgraph.privileges"), subgraphs = {
+		@NamedSubgraph(name = "subgraph.privileges", attributeNodes = @NamedAttributeNode(value = "privileges")) })
 public class UserEntity {
 	@Id
 	private String userId;

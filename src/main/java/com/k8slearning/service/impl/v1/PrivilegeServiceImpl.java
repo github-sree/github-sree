@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.k8slearning.api.PrivilegeApi;
 import com.k8slearning.model.Privilege;
 import com.k8slearning.repository.PrivilegeRepository;
 import com.k8slearning.service.PrivilegeService;
+import com.k8slearning.utils.ConstantsUtil;
 import com.k8slearning.utils.CustomException;
 
 @Service
@@ -28,21 +30,27 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 	@Autowired
 	private ModelMapper modelMap;
 
-	private PrivilegeApi privilegeResponse = new PrivilegeApi();
+	@Autowired
+	private PrivilegeApi privilegeResponse;
+
+	@Autowired
+	private SimpMessagingTemplate messageTemplate;
 
 	@Override
 	public PrivilegeApi createPrivileges(PrivilegeApi privilegeApi) {
-		PrivilegeApi response = null;
+		privilegeResponse.clear();
 		try {
 			Privilege privil = modelMap.map(privilegeApi, Privilege.class);
 			privil.setPrivilegeId(UUID.randomUUID().toString());
 			privilegeRepository.save(privil);
-			response = modelMap.map(privil, PrivilegeApi.class);
+			privilegeResponse = modelMap.map(privil, PrivilegeApi.class);
 			LOGGER.info("privilege saved with id::{}", privil.getPrivilegeId());
+			messageTemplate.convertAndSend(ConstantsUtil.Topics.PRIVILEGE_TOPIC,
+					"privilege saved with id" + privil.getPrivilegeId());
 		} catch (Exception e) {
 			LOGGER.error("exception in privil service {}", e.getMessage());
 		}
-		return response;
+		return privilegeResponse;
 	}
 
 	@Override
@@ -52,10 +60,10 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 
 	@Override
 	public PrivilegeApi updatePrivilege(String privilegeId, PrivilegeApi privilegeApi) {
+		privilegeResponse.clear();
 		try {
 			Optional<Privilege> privilege = privilegeRepository.findById(privilegeId);
 			privilege.ifPresent(pDto -> {
-				privilegeResponse = new PrivilegeApi();
 				modelMap.map(privilegeApi, pDto);
 				pDto.setPrivilegeId(privilegeId);
 				privilegeRepository.save(pDto);

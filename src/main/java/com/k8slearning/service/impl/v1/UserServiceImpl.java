@@ -3,7 +3,6 @@ package com.k8slearning.service.impl.v1;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ import com.k8slearning.model.UserEntity;
 import com.k8slearning.repository.RoleRepository;
 import com.k8slearning.repository.UserRepository;
 import com.k8slearning.service.UserService;
-import com.k8slearning.utils.Constants;
+import com.k8slearning.utils.ConstantsUtil;
 
 @Service
 @Transactional
@@ -45,21 +44,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	private UserApi userResponse = new UserApi();
+	@Autowired
+	private UserApi userResponse;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		AuthUserDetails userdetails = null;
 		UserEntity userEntity = Optional.ofNullable(userRepository.findByUserName(username))
 				.orElseThrow(() -> new UsernameNotFoundException("no user found.."));
-		Hibernate.initialize(userEntity.getRole().getPrivileges());
-		userdetails = new AuthUserDetails(userEntity);
-
-		return userdetails;
+		return new AuthUserDetails(userEntity);
 	}
 
 	@Override
 	public UserApi createUser(UserApi userApi) {
+		userResponse.clear();
 		try {
 			UserEntity user = modelMapper.map(userApi, UserEntity.class);
 			user.setInitialUser(false);
@@ -71,8 +68,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			userRepository.save(user);
 			userResponse = modelMapper.map(user, UserApi.class);
 			userResponse.setPassword(null);
-			userResponse.setMessage(Constants.ResponseStatus.USER_SAVED);
-			userResponse.setStatus(Constants.Status.SUCCESS);
+			userResponse.setMessage(ConstantsUtil.ResponseStatus.USER_SAVED);
+			userResponse.setStatus(ConstantsUtil.Status.SUCCESS);
 		} catch (DataIntegrityViolationException e) {
 			LOGGER.error("parameters already exist..");
 		} catch (Exception e) {
@@ -98,6 +95,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Override
 	public UserApi assignRoleToUser(String userId, String roleId) {
+		userResponse.clear();
 		try {
 			Optional<UserEntity> userR = userRepository.findById(userId);
 			userR.ifPresent(user -> {

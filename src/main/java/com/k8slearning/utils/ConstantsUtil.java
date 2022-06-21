@@ -1,10 +1,8 @@
 package com.k8slearning.utils;
 
-public final class Constants {
+public interface ConstantsUtil {
 
-	private Constants() {
-		super();
-	}
+	public void clear();
 
 	public static final class Role {
 		private Role() {
@@ -64,5 +62,16 @@ public final class Constants {
 		public static final String ROLE_ALREAY_EXISTS = "Cannot create same role more than once...";
 		public static final String INITIALROLE_SAVED = "Initial role saved successfully...";
 		public static final String INITIAL_ROLE_EXISTS = "Cannot create admin role more than once...";
+	}
+
+	public static final class Topics {
+		private Topics() {
+			super();
+		}
+
+		public static final String PRIVILEGE_TOPIC = "/topic/privileges";
+		public static final String ROLE_TOPIC = "/topic/role";
+		public static final String USER_TOPIC = "/topic/user";
+
 	}
 }
