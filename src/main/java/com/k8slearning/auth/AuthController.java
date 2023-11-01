@@ -45,9 +45,9 @@ public class AuthController {
 			return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, resCookie.toString())
 					.body(generateResponse(userDetails));
 		} catch (DisabledException e) {
-			return new ResponseEntity<>("USER DISABLED", HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>("USER DISABLED", HttpStatus.UNAUTHORIZED);
 		} catch (BadCredentialsException e) {
-			return new ResponseEntity<>("INVALID_CREDENTIALS", HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>("INVALID_CREDENTIALS", HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
 			logger.error("exception in auth  {}", e.getMessage());
 			return null;

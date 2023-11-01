@@ -78,8 +78,11 @@ public class RoleServiceImpl implements RoleService {
 	public RoleApi updateRole(String roleId, RoleApi roleApi) {
 		Optional<Role> roleOp = roleRepository.findById(roleId);
 		roleOp.ifPresent(role -> {
+			role.setPrivileges(null);
+			role.setPrivileges(processPrivilege(roleApi.getPrivilegeNames()));
+			roleRepository.save(role);
 			modelMapper.map(roleApi, role);
-			LOGGER.info("updated user details {}", role);
+			LOGGER.info("updated role details {}", role);
 		});
 		return null;
 	}

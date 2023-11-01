@@ -16,7 +16,7 @@ spring:
       hibernate.format_sql: false
       hibernate.order_inserts: true
       hibernate.jdbc.batch_size: 30
-      hibernate.generate_statistics: true#  data:#    web:#      pageable:#        one-indexed-parameters: true
+      hibernate.generate_statistics: false#  data:#    web:#      pageable:#        one-indexed-parameters: true
 k8sapp:
   jwt:
     cookieName: k8sappCookie

@@ -13,11 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "privilege")
+@Table(name = "k8_privilege")
 public class Privilege {
 	@Id
 	private String privilegeId;
-	@Column(unique = true, nullable = false)
+	@Column(name = "privilege_name", unique = true, nullable = false)
 	private String name;
+	@Column(name="privilege_code")
 	private Integer code;
 }

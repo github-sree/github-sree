@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "k8_users")
 @NamedEntityGraph(name = "graph.user-roles-privileges", attributeNodes = @NamedAttributeNode(value = "role", subgraph = "subgraph.privileges"), subgraphs = {
 		@NamedSubgraph(name = "subgraph.privileges", attributeNodes = @NamedAttributeNode(value = "privileges")) })
 public class UserEntity {
@@ -30,11 +30,12 @@ public class UserEntity {
 	private String userName;
 	@Column(unique = true)
 	private String email;
-	@Column(nullable = false)
+	@Column(name = "user_password", nullable = false)
 	private String password;
 	private boolean initialUser;
 	private boolean accountNonExpired;
 	private boolean accountNonLocked;
+	@Column(name = "user_enabled")
 	private boolean enabled;
 	private boolean credentialsNonExpired;
 	@ManyToOne
