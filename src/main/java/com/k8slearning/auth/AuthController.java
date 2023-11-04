@@ -25,7 +25,7 @@ import com.k8slearning.api.AuthResponseApi;
 import com.k8slearning.utils.K8sJwtUtils;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v1/auth")
 public class AuthController {
 
 	@Autowired

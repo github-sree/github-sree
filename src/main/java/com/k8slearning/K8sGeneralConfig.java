@@ -15,7 +15,7 @@ public class K8sGeneralConfig implements WebMvcConfigurer {
 		modelMapper.getConfiguration().setAmbiguityIgnored(true);
 		return modelMapper;
 	}
-
+	
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/v1/**").allowedOrigins("http://localhost:4200")

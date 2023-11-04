@@ -1,7 +1,5 @@
 package com.k8slearning.controller;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +18,13 @@ import com.k8slearning.api.PagingResponseApi;
 import com.k8slearning.api.UserApi;
 import com.k8slearning.model.UserEntity;
 import com.k8slearning.service.UserService;
-import com.k8slearning.utils.ConstantsUtil;
+import com.k8slearning.utils.Constants;
 import com.k8slearning.utils.K8sUtils;
 
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/v1/auth")
+@RequestMapping("/v1/user")
 public class UserController {
 
 	@Autowired
@@ -33,14 +33,14 @@ public class UserController {
 	@Autowired
 	private K8sUtils utils;
 
-	@PostMapping("/user")
-	@PreAuthorize(ConstantsUtil.User.USER_CREATE)
+	@PostMapping("/")
+	@PreAuthorize(Constants.User.USER_CREATE)
 	public ResponseEntity<UserApi> createUser(@Valid @RequestBody UserApi userApi) {
 		return new ResponseEntity<>(userService.createUser(userApi), HttpStatus.OK);
 	}
 
-	@GetMapping("/user")
-	@PreAuthorize(ConstantsUtil.User.USER_READ)
+	@GetMapping("/")
+	@PreAuthorize(Constants.User.USER_READ)
 	public ResponseEntity<PagingResponseApi<UserApi>> retrieveUsers(final Pageable pageable) {
 		Page<UserEntity> pageUser = userService.retrieveUsers(pageable);
 		PagingResponseApi<UserApi> contents = new PagingResponseApi<>();
@@ -56,14 +56,14 @@ public class UserController {
 		return new ResponseEntity<>(contents, HttpStatus.OK);
 	}
 
-	@PutMapping("/user/{userId}")
-	@PreAuthorize(ConstantsUtil.User.USER_UPDATE)
+	@PutMapping("/{userId}")
+	@PreAuthorize(Constants.User.USER_UPDATE)
 	public ResponseEntity<UserApi> updateUser(@PathVariable String userId, @Valid @RequestBody UserApi userApi) {
 		return new ResponseEntity<>(userService.updateUser(userId, userApi), HttpStatus.OK);
 	}
 
-	@PutMapping("/user/assign-role/{userId}/{roleId}")
-	@PreAuthorize(ConstantsUtil.User.USER_ROLE_ASSIGN)
+	@PutMapping("/assign-role/{userId}/{roleId}")
+	@PreAuthorize(Constants.User.USER_ROLE_ASSIGN)
 	public ResponseEntity<UserApi> assignRole(@PathVariable String userId, @PathVariable String roleId) {
 		return new ResponseEntity<>(userService.assignRoleToUser(userId, roleId), HttpStatus.OK);
 	}

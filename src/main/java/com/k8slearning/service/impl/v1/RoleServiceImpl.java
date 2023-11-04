@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.k8slearning.api.RoleApi;
 import com.k8slearning.model.Privilege;
@@ -19,9 +20,10 @@ import com.k8slearning.model.Role;
 import com.k8slearning.repository.PrivilegeRepository;
 import com.k8slearning.repository.RoleRepository;
 import com.k8slearning.service.RoleService;
-import com.k8slearning.utils.ConstantsUtil;
+import com.k8slearning.utils.Constants;
 
 @Service
+@Transactional
 public class RoleServiceImpl implements RoleService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RoleServiceImpl.class);
 	@Autowired
@@ -32,7 +34,7 @@ public class RoleServiceImpl implements RoleService {
 
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@Autowired
 	private RoleApi roleResponse;
 
@@ -54,8 +56,8 @@ public class RoleServiceImpl implements RoleService {
 			}
 			roleRepository.save(roles);
 			roleResponse = modelMapper.map(roles, RoleApi.class);
-			roleResponse.setMessage(ConstantsUtil.ResponseStatus.ROLE_SAVED);
-			roleResponse.setStatus(ConstantsUtil.Status.SUCCESS);
+			roleResponse.setMessage(Constants.ResponseStatus.ROLE_SAVED);
+			roleResponse.setStatus(Constants.Status.SUCCESS);
 		} catch (Exception e) {
 			LOGGER.info("exception roles save {}", e.getLocalizedMessage());
 		}

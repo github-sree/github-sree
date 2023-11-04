@@ -1,7 +1,5 @@
 package com.k8slearning.controller;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +18,13 @@ import com.k8slearning.api.PagingResponseApi;
 import com.k8slearning.api.RoleApi;
 import com.k8slearning.model.Role;
 import com.k8slearning.service.RoleService;
-import com.k8slearning.utils.ConstantsUtil;
+import com.k8slearning.utils.Constants;
 import com.k8slearning.utils.K8sUtils;
 
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/v1/auth")
+@RequestMapping("/v1/role")
 public class RolesController {
 
 	@Autowired
@@ -33,14 +33,14 @@ public class RolesController {
 	@Autowired
 	private K8sUtils utils;
 
-	@PostMapping("/role")
-	@PreAuthorize(ConstantsUtil.Role.ROLES_CREATE)
+	@PostMapping("/")
+	@PreAuthorize(Constants.Role.ROLES_CREATE)
 	public ResponseEntity<RoleApi> createRole(@Valid @RequestBody RoleApi roleApi) {
 		return new ResponseEntity<>(roleService.createRole(roleApi), HttpStatus.OK);
 	}
 
-	@GetMapping("/role")
-	@PreAuthorize(ConstantsUtil.Role.ROLES_READ)
+	@GetMapping("/")
+	@PreAuthorize(Constants.Role.ROLES_READ)
 	public ResponseEntity<PagingResponseApi<RoleApi>> retrieveRoles(final Pageable pageable) {
 		Page<Role> pageRole = roleService.retrieveRoles(pageable);
 		PagingResponseApi<RoleApi> contents = new PagingResponseApi<>();
@@ -52,8 +52,8 @@ public class RolesController {
 		return new ResponseEntity<>(contents, HttpStatus.OK);
 	}
 
-	@PutMapping("/role/{roleId}")
-	@PreAuthorize(ConstantsUtil.Role.ROLES_UPDATE)
+	@PutMapping("/{roleId}")
+	@PreAuthorize(Constants.Role.ROLES_UPDATE)
 	public ResponseEntity<RoleApi> updateRole(@PathVariable String roleId, @Valid @RequestBody RoleApi roleApi) {
 		return new ResponseEntity<>(roleService.updateRole(roleId, roleApi), HttpStatus.OK);
 	}

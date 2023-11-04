@@ -17,14 +17,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.k8slearning.api.RoleApi;
 import com.k8slearning.api.UserApi;
 import com.k8slearning.auth.AuthUserDetails;
 import com.k8slearning.model.Role;
 import com.k8slearning.model.UserEntity;
 import com.k8slearning.repository.RoleRepository;
 import com.k8slearning.repository.UserRepository;
+import com.k8slearning.service.RoleService;
 import com.k8slearning.service.UserService;
-import com.k8slearning.utils.ConstantsUtil;
+import com.k8slearning.utils.Constants;
 
 @Service
 @Transactional
@@ -47,6 +49,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Autowired
 	private UserApi userResponse;
 
+	@Autowired
+	private RoleService roleService;
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		UserEntity userEntity = Optional.ofNullable(userRepository.findByUserName(username))
@@ -60,16 +65,20 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		try {
 			UserEntity user = modelMapper.map(userApi, UserEntity.class);
 			user.setInitialUser(false);
+			RoleApi roleApi;
 			if (!userRepository.initialUserExists()) {
 				user.setInitialUser(true);
+				roleApi = roleService.createRole(RoleApi.builder().roleName(Constants.Role.ADMINISTRATOR).build());
+			} else {
+				roleApi = roleService.createRole(userApi.getRole());
 			}
 			user.setUserId(UUID.randomUUID().toString());
 			user.setPassword(passwordEncoder.encode(userApi.getPassword()));
 			userRepository.save(user);
-			userResponse = modelMapper.map(user, UserApi.class);
+			userResponse = assignRoleToUser(user.getUserId(), roleApi.getRoleId());
 			userResponse.setPassword(null);
-			userResponse.setMessage(ConstantsUtil.ResponseStatus.USER_SAVED);
-			userResponse.setStatus(ConstantsUtil.Status.SUCCESS);
+			userResponse.setMessage(Constants.ResponseStatus.USER_SAVED);
+			userResponse.setStatus(Constants.Status.SUCCESS);
 		} catch (DataIntegrityViolationException e) {
 			LOGGER.error("parameters already exist..");
 		} catch (Exception e) {

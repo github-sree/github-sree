@@ -2,11 +2,6 @@ package com.k8slearning;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +12,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.k8slearning.service.UserService;
+import com.k8slearning.utils.Constants;
 import com.k8slearning.utils.K8sJwtUtils;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class K8sSecurityFilter extends OncePerRequestFilter {
 
@@ -33,7 +34,7 @@ public class K8sSecurityFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String currentUri = request.getRequestURI();
 		try {
-			if (!currentUri.contains("/v1/setup")) {
+			if (filterURI(currentUri)) {
 				String jwt = parseJwt(request);
 				if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
 					String username = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -50,6 +51,19 @@ public class K8sSecurityFilter extends OncePerRequestFilter {
 			loggerFilter.error("Cannot set user authentication: {}", e.getMessage());
 		}
 		filterChain.doFilter(request, response);
+	}
+
+	private boolean filterURI(String currentUri) {
+		if (currentUri.contains(Constants.Api.WHILTELIST_SETUP_URL)) {
+			return false;
+		}
+		if (currentUri.contains(Constants.Api.WHITELIST_AUTH_URL)) {
+			return false;
+		}
+		if (currentUri.contains(Constants.Api.WHITELIST_H2_URL)) {
+			return false;
+		}
+		return true;
 	}
 
 	private String parseJwt(HttpServletRequest request) {

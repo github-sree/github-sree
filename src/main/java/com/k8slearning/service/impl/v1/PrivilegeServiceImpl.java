@@ -9,14 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.k8slearning.api.PrivilegeApi;
 import com.k8slearning.model.Privilege;
 import com.k8slearning.repository.PrivilegeRepository;
 import com.k8slearning.service.PrivilegeService;
-import com.k8slearning.utils.ConstantsUtil;
 import com.k8slearning.utils.CustomException;
 
 @Service
@@ -33,8 +31,8 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 	@Autowired
 	private PrivilegeApi privilegeResponse;
 
-	@Autowired
-	private SimpMessagingTemplate messageTemplate;
+//	@Autowired
+//	private SimpMessagingTemplate messageTemplate;
 
 	@Override
 	public PrivilegeApi createPrivileges(PrivilegeApi privilegeApi) {
@@ -45,8 +43,8 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 			privilegeRepository.save(privil);
 			privilegeResponse = modelMap.map(privil, PrivilegeApi.class);
 			LOGGER.info("privilege saved with id::{}", privil.getPrivilegeId());
-			messageTemplate.convertAndSend(ConstantsUtil.Topics.PRIVILEGE_TOPIC,
-					"privilege saved with id" + privil.getPrivilegeId());
+//			messageTemplate.convertAndSend(ConstantsUtil.Topics.PRIVILEGE_TOPIC,
+//					"privilege saved with id" + privil.getPrivilegeId());
 		} catch (Exception e) {
 			LOGGER.error("exception in privil service {}", e.getMessage());
 		}

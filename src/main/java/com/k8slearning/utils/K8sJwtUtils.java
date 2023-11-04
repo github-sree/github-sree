@@ -1,10 +1,11 @@
 package com.k8slearning.utils;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import javax.crypto.SecretKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +15,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class K8sJwtUtils {
@@ -30,28 +31,31 @@ public class K8sJwtUtils {
 	private String cookieName;
 	@Value("${k8sapp.jwt.expirationMs}")
 	private long expirationTime;
-	private Logger logger = LoggerFactory.getLogger(K8sJwtUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(K8sJwtUtils.class);
+
+	private SecretKey SECRET_KEY;
+
+	@PostConstruct
+	public void init() {
+		String encodedString = Base64.getEncoder().encodeToString(secret.getBytes());
+		SECRET_KEY = Keys.hmacShaKeyFor(encodedString.getBytes(StandardCharsets.UTF_8));
+	}
 
 	public boolean validateJwtToken(String token) {
 		try {
-			Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+			LOGGER.info("incoming token::{}", token);
+			Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token);
 			return true;
-		} catch (SignatureException e) {
-			logger.error("Invalid JWT signature: {}", e.getMessage());
-		} catch (MalformedJwtException e) {
-			logger.error("Invalid JWT token: {}", e.getMessage());
-		} catch (ExpiredJwtException e) {
-			logger.error("JWT token is expired: {}", e.getMessage());
-		} catch (UnsupportedJwtException e) {
-			logger.error("JWT token is unsupported: {}", e.getMessage());
-		} catch (IllegalArgumentException e) {
-			logger.error("JWT claims string is empty: {}", e.getMessage());
+		} catch (JwtException e) {
+			LOGGER.error("JWT claims string is empty: {}", e.getMessage());
 		}
 		return false;
 	}
 
 	public String getUserNameFromJwtToken(String jwt) {
-		return Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody().getSubject();
+		LOGGER.info("subject value is::{}",
+				Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(jwt).getPayload().getSubject());
+		return Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(jwt).getPayload().getSubject();
 	}
 
 	public String getJwtFromCookies(HttpServletRequest request) {
@@ -74,8 +78,8 @@ public class K8sJwtUtils {
 
 	private String generateTokenFromName(String username) {
 		Date issuedAt = new Date();
-		return Jwts.builder().setSubject(username).setIssuedAt(issuedAt)
-				.setExpiration(new Date(issuedAt.getTime() + expirationTime)).signWith(SignatureAlgorithm.HS256, secret)
-				.compact();
+
+		return Jwts.builder().subject(username).issuedAt(issuedAt)
+				.expiration(new Date(issuedAt.getTime() + expirationTime)).signWith(SECRET_KEY).compact();
 	}
 }
